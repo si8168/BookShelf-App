@@ -39,6 +39,6 @@ public class BookSearchItem
 
     // Helper property to safely construct cover image URLs
     public string CoverUrl => CoverId.HasValue
-        ? $"https://covers.openlibrary.org/b/id/{CoverId.Value}-M.jpg"
-        : "https://via.placeholder.com/150x200?text=No+Cover";
+    ? $"https://covers.openlibrary.org/b/id/{CoverId.Value}-M.jpg"
+    : "no_cover.png";
 }

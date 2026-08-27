@@ -25,8 +25,16 @@ public class SavedBook
 
     public string ReadingStatus { get; set; } = "Want to Read";
 
-    // --- Extension Features: Personal Notes & Rating ---
-    public int Rating { get; set; } = 0; // 0 to 5 Stars
+    public int Rating { get; set; } = 0;
 
     public string PersonalNotes { get; set; } = string.Empty;
+
+    public DateTime? DateStarted { get; set; }
+
+    public DateTime? DateCompleted { get; set; }
+
+    [Ignore]
+    public string DisplayCover => !string.IsNullOrWhiteSpace(CoverUrl)
+        ? CoverUrl
+        : (CoverId.HasValue ? $"https://covers.openlibrary.org/b/id/{CoverId.Value}-L.jpg" : "https://via.placeholder.com/150x220.png?text=No+Cover");
 }

@@ -56,4 +56,16 @@ public partial class BookDetailsPage : ContentPage
             await DisplayAlert("Error", "Failed to save book locally.", "OK");
         }
     }
+
+    private async void OnShareBookClicked(object sender, EventArgs e)
+    {
+        if (_book == null) return;
+
+        await Share.Default.RequestAsync(new ShareTextRequest
+        {
+            Title = $"Check out {_book.Title}",
+            Text = $"I'm viewing \"{_book.Title}\" by {_book.Author} on BookShelf!",
+            Uri = $"https://openlibrary.org{_book.Key}"
+        });
+    }
 }

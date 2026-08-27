@@ -27,11 +27,17 @@
                    TextColor="Gray" 
                    HorizontalTextAlignment="Center" />
 
-            <Button Text="Save to My Books" 
-                    Clicked="OnSaveButtonClicked" 
-                    Margin="0,20,0,0" 
-                    BackgroundColor="DarkSlateBlue" 
-                    TextColor="White" />
+            <HorizontalStackLayout Spacing="10" HorizontalOptions="Center" Margin="0,20,0,0">
+                <Button Text="Save to My Books" 
+                        Clicked="OnSaveButtonClicked" 
+                        BackgroundColor="DarkSlateBlue" 
+                        TextColor="White" />
+
+                <Button Text="Share Book" 
+                        Clicked="OnShareBookClicked" 
+                        BackgroundColor="SeaGreen" 
+                        TextColor="White" />
+            </HorizontalStackLayout>
 
         </VerticalStackLayout>
     </ScrollView>

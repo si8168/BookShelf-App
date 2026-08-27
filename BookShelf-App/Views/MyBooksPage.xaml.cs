@@ -7,6 +7,8 @@ public partial class MyBooksPage : ContentPage
 {
     private readonly BookDatabaseService _databaseService;
     private List<SavedBook> _allSavedBooks = new();
+    private bool _isUpdating = false;
+    private const int AnnualGoal = 10;
 
     public MyBooksPage(BookDatabaseService databaseService)
     {
@@ -28,11 +30,13 @@ public partial class MyBooksPage : ContentPage
 
     private void OnFilterChanged(object sender, EventArgs e)
     {
+        if (_isUpdating) return;
         ApplyFilters();
     }
 
     private void ApplyFilters()
     {
+        _isUpdating = true;
         var filtered = _allSavedBooks.AsEnumerable();
 
         // 1. Text Search Filter
@@ -50,27 +54,51 @@ public partial class MyBooksPage : ContentPage
             filtered = filtered.Where(b => b.ReadingStatus == selectedStatus);
         }
 
+        // 3. Sorting Logic
+        filtered = SortPicker?.SelectedIndex switch
+        {
+            1 => filtered.OrderBy(b => b.Title),
+            2 => filtered.OrderByDescending(b => b.Rating),
+            _ => filtered.OrderByDescending(b => b.DateSaved)
+        };
+
         SavedBooksCollectionView.ItemsSource = filtered.ToList();
+        UpdateGoalTracker();
+        _isUpdating = false;
+    }
+
+    private void UpdateGoalTracker()
+    {
+        int completedCount = _allSavedBooks.Count(b => b.ReadingStatus == "Completed");
+        double progress = Math.Clamp((double)completedCount / AnnualGoal, 0.0, 1.0);
+
+        GoalProgressBar.Progress = progress;
+        GoalProgressLabel.Text = $"{completedCount} / {AnnualGoal} Completed";
     }
 
     private async void OnStatusChanged(object sender, EventArgs e)
     {
+        if (_isUpdating) return;
+
         if (sender is Picker picker && picker.BindingContext is SavedBook book)
         {
-            book.ReadingStatus = picker.SelectedItem?.ToString() ?? "Want to Read";
-            await _databaseService.SaveBookAsync(book);
+            // TwoWay binding updates book.ReadingStatus; persist directly to SQLite
+            bool updated = await _databaseService.UpdateBookAsync(book);
+            if (updated)
+            {
+                UpdateGoalTracker();
+            }
         }
     }
 
     private async void OnRatingChanged(object sender, EventArgs e)
     {
+        if (_isUpdating) return;
+
         if (sender is Picker picker && picker.BindingContext is SavedBook book)
         {
-            if (picker.SelectedItem is int rating)
-            {
-                book.Rating = rating;
-                await _databaseService.SaveBookAsync(book);
-            }
+            // TwoWay binding updates book.Rating; persist directly to SQLite
+            await _databaseService.UpdateBookAsync(book);
         }
     }
 
@@ -86,7 +114,7 @@ public partial class MyBooksPage : ContentPage
             if (result != null)
             {
                 book.PersonalNotes = result;
-                await _databaseService.SaveBookAsync(book);
+                await _databaseService.UpdateBookAsync(book);
                 await DisplayAlert("Saved", "Personal notes updated successfully.", "OK");
             }
         }

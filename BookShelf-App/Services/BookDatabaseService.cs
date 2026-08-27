@@ -12,7 +12,7 @@ public class BookDatabaseService
         if (_database != null)
             return;
 
-        string dbPath = Path.Combine(FileSystem.AppDataDirectory, "bookshelf_v3.db3");
+        string dbPath = Path.Combine(FileSystem.AppDataDirectory, "bookshelf_v4.db3");
         _database = new SQLiteAsyncConnection(dbPath);
 
         await _database.CreateTableAsync<SavedBook>();
@@ -48,15 +48,23 @@ public class BookDatabaseService
         await InitAsync();
         try
         {
+            // If the record exists in SQLite (has a primary key ID), update it
+            if (book.Id != 0)
+            {
+                await _database.UpdateAsync(book);
+                return true;
+            }
+
+            // If it's a new entry, prevent duplicate keys
             if (await IsBookSavedAsync(book.OpenLibraryKey))
-                return false; // Prevent duplicates
+                return false;
 
             await _database.InsertAsync(book);
             return true;
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Database Insert Error: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"Database Save Error: {ex.Message}");
             return false;
         }
     }

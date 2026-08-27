@@ -5,7 +5,7 @@
              x:Class="BookShelf.Views.MyBooksPage"
              Title="My Reading List">
 
-    <Grid RowDefinitions="Auto, Auto, *" Padding="15" RowSpacing="10">
+    <Grid RowDefinitions="Auto, Auto, Auto, Auto, *" Padding="15" RowSpacing="10">
 
         <!-- Row 0: Header -->
         <Label Grid.Row="0" 
@@ -14,8 +14,22 @@
                FontAttributes="Bold" 
                HorizontalOptions="Center" />
 
-        <!-- Row 1: Extension Challenge - Search & Status Filters -->
-        <Grid Grid.Row="1" ColumnDefinitions="*, *" ColumnSpacing="10">
+        <!-- Row 1: Goal Tracker Widget -->
+        <Border Grid.Row="1" BackgroundColor="#F0F4F8" Stroke="DarkSlateBlue" Padding="12">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="8" />
+            </Border.StrokeShape>
+            <VerticalStackLayout Spacing="5">
+                <Grid ColumnDefinitions="*, Auto">
+                    <Label Text="Annual Reading Challenge" FontAttributes="Bold" FontSize="14" TextColor="DarkSlateBlue" />
+                    <Label x:Name="GoalProgressLabel" Grid.Column="1" Text="0 / 10 Completed" FontAttributes="Bold" FontSize="14" TextColor="DarkSlateBlue" />
+                </Grid>
+                <ProgressBar x:Name="GoalProgressBar" Progress="0.0" ProgressColor="DarkSlateBlue" HeightRequest="8" />
+            </VerticalStackLayout>
+        </Border>
+
+        <!-- Row 2: Search & Status Filters -->
+        <Grid Grid.Row="2" ColumnDefinitions="*, *" ColumnSpacing="10">
             <SearchBar x:Name="SavedSearchBar" 
                        Grid.Column="0" 
                        Placeholder="Search title or author..." 
@@ -35,8 +49,22 @@
             </Picker>
         </Grid>
 
-        <!-- Row 2: Saved Books Collection -->
-        <CollectionView x:Name="SavedBooksCollectionView" Grid.Row="2">
+        <!-- Row 3: Extension Challenge - Sorting Dropdown -->
+        <Grid Grid.Row="3" ColumnDefinitions="Auto, *" ColumnSpacing="10" VerticalOptions="Center">
+            <Label Text="Sort By:" VerticalOptions="Center" FontAttributes="Bold" FontSize="12" />
+            <Picker x:Name="SortPicker" Grid.Column="1" SelectedIndex="0" SelectedIndexChanged="OnFilterChanged">
+                <Picker.ItemsSource>
+                    <x:Array Type="{x:Type x:String}">
+                        <x:String>Date Saved (Newest)</x:String>
+                        <x:String>Title (A-Z)</x:String>
+                        <x:String>Rating (Highest)</x:String>
+                    </x:Array>
+                </Picker.ItemsSource>
+            </Picker>
+        </Grid>
+
+        <!-- Row 4: Saved Books Collection -->
+        <CollectionView x:Name="SavedBooksCollectionView" Grid.Row="4">
             <CollectionView.EmptyView>
                 <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="10">
                     <Label Text="No saved books match your criteria." FontSize="18" TextColor="Gray" HorizontalOptions="Center" />
@@ -46,15 +74,15 @@
 
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:SavedBook">
-                    <Frame Margin="0,0,0,10" Padding="12" CornerRadius="8" BorderColor="LightGray">
-                        <Grid ColumnDefinitions="80, *" ColumnSpacing="15">
+                    <Frame Margin="0,0,0,12" Padding="12" CornerRadius="8" BorderColor="LightGray">
+                        <Grid ColumnDefinitions="120, *" ColumnSpacing="15">
 
                             <!-- Book Cover -->
                             <Image Grid.Column="0" 
-                                   Source="{Binding CoverUrl}" 
-                                   WidthRequest="80" 
-                                   HeightRequest="120" 
-                                   Aspect="AspectFill" 
+                                   Source="{Binding DisplayCover}" 
+                                   WidthRequest="120" 
+                                   HeightRequest="170" 
+                                   Aspect="AspectFit"
                                    VerticalOptions="Start" />
 
                             <!-- Info & Controls -->
@@ -63,10 +91,10 @@
                                 <Label Text="{Binding Author}" TextColor="DimGray" FontSize="14" MaxLines="1" LineBreakMode="TailTruncation" />
                                 <Label Text="{Binding DateSaved, StringFormat='Saved: {0:yyyy-MM-dd}'}" TextColor="Gray" FontSize="11" />
 
-                                <!-- Status Picker -->
+                                <!-- Status Picker with TwoWay Binding -->
                                 <HorizontalStackLayout Spacing="8" Margin="0,2,0,0">
                                     <Label Text="Status:" VerticalOptions="Center" FontSize="12" FontAttributes="Bold" />
-                                    <Picker SelectedItem="{Binding ReadingStatus}" 
+                                    <Picker SelectedItem="{Binding ReadingStatus, Mode=TwoWay}" 
                                             SelectedIndexChanged="OnStatusChanged" 
                                             FontSize="12" 
                                             HeightRequest="35"
@@ -81,10 +109,10 @@
                                     </Picker>
                                 </HorizontalStackLayout>
 
-                                <!-- Rating Picker (0 to 5 Stars) -->
+                                <!-- Rating Picker with TwoWay Binding -->
                                 <HorizontalStackLayout Spacing="8">
                                     <Label Text="Rating:" VerticalOptions="Center" FontSize="12" FontAttributes="Bold" />
-                                    <Picker SelectedItem="{Binding Rating}" 
+                                    <Picker SelectedItem="{Binding Rating, Mode=TwoWay}" 
                                             SelectedIndexChanged="OnRatingChanged" 
                                             FontSize="12" 
                                             HeightRequest="35"
