@@ -5,42 +5,66 @@
              x:Class="BookShelf.Views.MyBooksPage"
              Title="My Reading List">
 
-    <Grid RowDefinitions="Auto, *" Padding="15" RowSpacing="10">
+    <Grid RowDefinitions="Auto, Auto, *" Padding="15" RowSpacing="10">
 
+        <!-- Row 0: Header -->
         <Label Grid.Row="0" 
                Text="My Saved Books" 
                FontSize="24" 
                FontAttributes="Bold" 
                HorizontalOptions="Center" />
 
-        <CollectionView x:Name="SavedBooksCollectionView" Grid.Row="1">
+        <!-- Row 1: Extension Challenge - Search & Status Filters -->
+        <Grid Grid.Row="1" ColumnDefinitions="*, *" ColumnSpacing="10">
+            <SearchBar x:Name="SavedSearchBar" 
+                       Grid.Column="0" 
+                       Placeholder="Search title or author..." 
+                       TextChanged="OnFilterChanged" />
+            <Picker x:Name="StatusFilterPicker" 
+                    Grid.Column="1" 
+                    Title="Filter by Status" 
+                    SelectedIndexChanged="OnFilterChanged">
+                <Picker.ItemsSource>
+                    <x:Array Type="{x:Type x:String}">
+                        <x:String>All</x:String>
+                        <x:String>Want to Read</x:String>
+                        <x:String>Reading</x:String>
+                        <x:String>Completed</x:String>
+                    </x:Array>
+                </Picker.ItemsSource>
+            </Picker>
+        </Grid>
+
+        <!-- Row 2: Saved Books Collection -->
+        <CollectionView x:Name="SavedBooksCollectionView" Grid.Row="2">
             <CollectionView.EmptyView>
                 <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="10">
-                    <Label Text="No saved books yet." FontSize="18" TextColor="Gray" HorizontalOptions="Center" />
-                    <Label Text="Search for books and save them to build your list!" FontSize="14" TextColor="DarkGray" HorizontalOptions="Center" />
+                    <Label Text="No saved books match your criteria." FontSize="18" TextColor="Gray" HorizontalOptions="Center" />
+                    <Label Text="Try adjusting your filters or search for new books!" FontSize="14" TextColor="DarkGray" HorizontalOptions="Center" />
                 </VerticalStackLayout>
             </CollectionView.EmptyView>
 
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:SavedBook">
-                    <Frame Margin="0,0,0,10" Padding="10" CornerRadius="8" BorderColor="LightGray">
+                    <Frame Margin="0,0,0,10" Padding="12" CornerRadius="8" BorderColor="LightGray">
                         <Grid ColumnDefinitions="80, *" ColumnSpacing="15">
 
                             <!-- Book Cover -->
                             <Image Grid.Column="0" 
                                    Source="{Binding CoverUrl}" 
                                    WidthRequest="80" 
-                                   HeightRequest="110" 
-                                   Aspect="AspectFill" />
+                                   HeightRequest="120" 
+                                   Aspect="AspectFill" 
+                                   VerticalOptions="Start" />
 
-                            <!-- Info & Actions -->
-                            <VerticalStackLayout Grid.Column="1" Spacing="4">
+                            <!-- Info & Controls -->
+                            <VerticalStackLayout Grid.Column="1" Spacing="5">
                                 <Label Text="{Binding Title}" FontAttributes="Bold" FontSize="16" MaxLines="2" LineBreakMode="TailTruncation" />
                                 <Label Text="{Binding Author}" TextColor="DimGray" FontSize="14" MaxLines="1" LineBreakMode="TailTruncation" />
-                                <Label Text="{Binding DateSaved, StringFormat='Saved: {0:yyyy-MM-dd}'}" TextColor="Gray" FontSize="12" />
+                                <Label Text="{Binding DateSaved, StringFormat='Saved: {0:yyyy-MM-dd}'}" TextColor="Gray" FontSize="11" />
 
-                                <!-- Reading Status Picker -->
-                                <HorizontalStackLayout Spacing="8" Margin="0,5,0,0">
+                                <!-- Status Picker -->
+                                <HorizontalStackLayout Spacing="8" Margin="0,2,0,0">
                                     <Label Text="Status:" VerticalOptions="Center" FontSize="12" FontAttributes="Bold" />
                                     <Picker SelectedItem="{Binding ReadingStatus}" 
                                             SelectedIndexChanged="OnStatusChanged" 
@@ -57,16 +81,45 @@
                                     </Picker>
                                 </HorizontalStackLayout>
 
-                                <!-- Remove Button -->
-                                <Button Text="Remove" 
-                                        FontSize="12" 
-                                        HeightRequest="32"
-                                        BackgroundColor="DarkRed"
-                                        TextColor="White"
-                                        HorizontalOptions="End"
-                                        Margin="0,5,0,0"
-                                        Clicked="OnRemoveClicked" 
-                                        CommandParameter="{Binding .}" />
+                                <!-- Rating Picker (0 to 5 Stars) -->
+                                <HorizontalStackLayout Spacing="8">
+                                    <Label Text="Rating:" VerticalOptions="Center" FontSize="12" FontAttributes="Bold" />
+                                    <Picker SelectedItem="{Binding Rating}" 
+                                            SelectedIndexChanged="OnRatingChanged" 
+                                            FontSize="12" 
+                                            HeightRequest="35"
+                                            BindingContext="{Binding .}">
+                                        <Picker.ItemsSource>
+                                            <x:Array Type="{x:Type x:Int32}">
+                                                <x:Int32>0</x:Int32>
+                                                <x:Int32>1</x:Int32>
+                                                <x:Int32>2</x:Int32>
+                                                <x:Int32>3</x:Int32>
+                                                <x:Int32>4</x:Int32>
+                                                <x:Int32>5</x:Int32>
+                                            </x:Array>
+                                        </Picker.ItemsSource>
+                                    </Picker>
+                                    <Label Text="★" TextColor="Gold" VerticalOptions="Center" FontSize="14" />
+                                </HorizontalStackLayout>
+
+                                <!-- Notes & Remove Buttons -->
+                                <HorizontalStackLayout Spacing="8" HorizontalOptions="End" Margin="0,5,0,0">
+                                    <Button Text="Notes" 
+                                            FontSize="12" 
+                                            HeightRequest="32"
+                                            BackgroundColor="DarkSlateBlue"
+                                            TextColor="White"
+                                            Clicked="OnEditNotesClicked" 
+                                            CommandParameter="{Binding .}" />
+                                    <Button Text="Remove" 
+                                            FontSize="12" 
+                                            HeightRequest="32"
+                                            BackgroundColor="DarkRed"
+                                            TextColor="White"
+                                            Clicked="OnRemoveClicked" 
+                                            CommandParameter="{Binding .}" />
+                                </HorizontalStackLayout>
                             </VerticalStackLayout>
                         </Grid>
                     </Frame>

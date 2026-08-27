@@ -12,7 +12,7 @@ public class BookDatabaseService
         if (_database != null)
             return;
 
-        string dbPath = Path.Combine(FileSystem.AppDataDirectory, "bookshelf_v2.db3");
+        string dbPath = Path.Combine(FileSystem.AppDataDirectory, "bookshelf_v3.db3");
         _database = new SQLiteAsyncConnection(dbPath);
 
         await _database.CreateTableAsync<SavedBook>();

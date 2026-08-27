@@ -5,17 +5,31 @@
              x:Class="BookShelf.Views.BookSearchPage"
              Title="Search Books">
 
-    <Grid RowDefinitions="Auto, Auto, Auto, *" Padding="15" RowSpacing="10">
+    <Grid RowDefinitions="Auto, Auto, Auto, Auto, *" Padding="15" RowSpacing="10">
 
-        <!-- App Heading -->
-        <Label Grid.Row="0" 
+        <!-- Grid.Row="0": Offline Warning Banner -->
+        <Border x:Name="OfflineBanner"
+                Grid.Row="0"
+                BackgroundColor="#FFD2D2"
+                Stroke="#D8000C"
+                Padding="10"
+                IsVisible="False"
+                Margin="0,0,0,5">
+            <Label Text="⚠️ You are currently offline. Search functionality requires an internet connection."
+                   TextColor="#D8000C"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center" />
+        </Border>
+
+        <!-- Grid.Row="1": App Heading -->
+        <Label Grid.Row="1" 
                Text="BookShelf Search" 
                FontSize="24" 
                FontAttributes="Bold" 
                HorizontalOptions="Center" />
 
-        <!-- Search Controls -->
-        <Grid Grid.Row="1" ColumnDefinitions="*, Auto" ColumnSpacing="10">
+        <!-- Grid.Row="2": Search Controls -->
+        <Grid Grid.Row="2" ColumnDefinitions="*, Auto" ColumnSpacing="10">
             <SearchBar x:Name="BookSearchBar" 
                        Placeholder="Search title or author..." 
                        SearchButtonPressed="OnSearchClicked" />
@@ -24,8 +38,8 @@
                     Clicked="OnSearchClicked" />
         </Grid>
 
-        <!-- Status & Loading -->
-        <VerticalStackLayout Grid.Row="2" Spacing="5">
+        <!-- Grid.Row="3": Status & Loading -->
+        <VerticalStackLayout Grid.Row="3" Spacing="5">
             <ActivityIndicator x:Name="LoadingIndicator" 
                                IsRunning="False" 
                                IsVisible="False" 
@@ -36,14 +50,14 @@
                    HorizontalOptions="Center" />
         </VerticalStackLayout>
 
-        <!-- Search Results -->
-        <CollectionView x:Name="ResultsCollectionView" Grid.Row="3" Margin="0,10,0,0">
+        <!-- Grid.Row="4": Search Results -->
+        <CollectionView x:Name="ResultsCollectionView" Grid.Row="4" Margin="0,10,0,0">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:BookSearchItem">
                     <Frame Margin="0,0,0,10" Padding="10" CornerRadius="8" BorderColor="LightGray">
                         <Grid ColumnDefinitions="80, *" ColumnSpacing="15">
 
-                            <!-- Cover Image with Fallback handling -->
+                            <!-- Cover Image -->
                             <Image Grid.Column="0" 
                                    Source="{Binding CoverUrl}" 
                                    WidthRequest="80" 

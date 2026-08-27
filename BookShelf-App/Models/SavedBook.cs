@@ -24,4 +24,9 @@ public class SavedBook
     public DateTime DateSaved { get; set; } = DateTime.Now;
 
     public string ReadingStatus { get; set; } = "Want to Read";
+
+    // --- Extension Features: Personal Notes & Rating ---
+    public int Rating { get; set; } = 0; // 0 to 5 Stars
+
+    public string PersonalNotes { get; set; } = string.Empty;
 }

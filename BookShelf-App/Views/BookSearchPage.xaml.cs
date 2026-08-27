@@ -1,5 +1,6 @@
 using BookShelf.Models;
 using BookShelf.Services;
+using Microsoft.Maui.Networking;
 
 namespace BookShelf.Views;
 
@@ -13,10 +14,33 @@ public partial class BookSearchPage : ContentPage
         InitializeComponent();
         _apiService = apiService;
         _databaseService = databaseService;
+
+        // Wire up internet connectivity monitoring
+        Connectivity.Current.ConnectivityChanged += OnConnectivityChanged;
+        CheckNetworkState();
+    }
+
+    private void CheckNetworkState()
+    {
+        bool isOffline = Connectivity.Current.NetworkAccess != NetworkAccess.Internet;
+        OfflineBanner.IsVisible = isOffline;
+        BookSearchBar.IsEnabled = !isOffline;
+    }
+
+    private void OnConnectivityChanged(object? sender, ConnectivityChangedEventArgs e)
+    {
+        MainThread.BeginInvokeOnMainThread(CheckNetworkState);
     }
 
     private async void OnSearchClicked(object sender, EventArgs e)
     {
+        // Guard against offline clicks
+        if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+        {
+            await DisplayAlert("Offline", "Please reconnect to the internet to search for books.", "OK");
+            return;
+        }
+
         string query = BookSearchBar.Text?.Trim();
 
         if (string.IsNullOrWhiteSpace(query))
@@ -69,7 +93,6 @@ public partial class BookSearchPage : ContentPage
     {
         if (sender is Button button && button.CommandParameter is BookSearchItem item)
         {
-            // Part 11 & 12: Save item & prevent duplicate saved books
             bool isAlreadySaved = await _databaseService.IsBookSavedAsync(item.Key);
             if (isAlreadySaved)
             {
