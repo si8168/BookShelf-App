@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="BookShelf.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:BookShelf.Views"
+    Title="BookShelf">
+
+    <TabBar>
+        <Tab Title="Search" Icon="dotnet_bot.png">
+            <ShellContent ContentTemplate="{DataTemplate views:BookSearchPage}" Route="BookSearchPage" />
+        </Tab>
+        <Tab Title="My Books" Icon="dotnet_bot.png">
+            <ShellContent ContentTemplate="{DataTemplate views:MyBooksPage}" Route="MyBooksPage" />
+        </Tab>
+    </TabBar>
+
+</Shell>

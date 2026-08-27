@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:BookShelf.Models"
+             x:Class="BookShelf.Views.MyBooksPage"
+             Title="My Reading List">
+
+    <Grid RowDefinitions="Auto, *" Padding="15" RowSpacing="10">
+
+        <Label Grid.Row="0" 
+               Text="My Saved Books" 
+               FontSize="24" 
+               FontAttributes="Bold" 
+               HorizontalOptions="Center" />
+
+        <CollectionView x:Name="SavedBooksCollectionView" Grid.Row="1">
+            <CollectionView.EmptyView>
+                <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="10">
+                    <Label Text="No saved books yet." FontSize="18" TextColor="Gray" HorizontalOptions="Center" />
+                    <Label Text="Search for books and save them to build your list!" FontSize="14" TextColor="DarkGray" HorizontalOptions="Center" />
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:SavedBook">
+                    <Frame Margin="0,0,0,10" Padding="10" CornerRadius="8" BorderColor="LightGray">
+                        <Grid ColumnDefinitions="80, *" ColumnSpacing="15">
+
+                            <!-- Book Cover -->
+                            <Image Grid.Column="0" 
+                                   Source="{Binding CoverUrl}" 
+                                   WidthRequest="80" 
+                                   HeightRequest="110" 
+                                   Aspect="AspectFill" />
+
+                            <!-- Info & Actions -->
+                            <VerticalStackLayout Grid.Column="1" Spacing="4">
+                                <Label Text="{Binding Title}" FontAttributes="Bold" FontSize="16" MaxLines="2" LineBreakMode="TailTruncation" />
+                                <Label Text="{Binding Author}" TextColor="DimGray" FontSize="14" MaxLines="1" LineBreakMode="TailTruncation" />
+                                <Label Text="{Binding DateSaved, StringFormat='Saved: {0:yyyy-MM-dd}'}" TextColor="Gray" FontSize="12" />
+
+                                <!-- Reading Status Picker -->
+                                <HorizontalStackLayout Spacing="8" Margin="0,5,0,0">
+                                    <Label Text="Status:" VerticalOptions="Center" FontSize="12" FontAttributes="Bold" />
+                                    <Picker SelectedItem="{Binding ReadingStatus}" 
+                                            SelectedIndexChanged="OnStatusChanged" 
+                                            FontSize="12" 
+                                            HeightRequest="35"
+                                            BindingContext="{Binding .}">
+                                        <Picker.ItemsSource>
+                                            <x:Array Type="{x:Type x:String}">
+                                                <x:String>Want to Read</x:String>
+                                                <x:String>Reading</x:String>
+                                                <x:String>Completed</x:String>
+                                            </x:Array>
+                                        </Picker.ItemsSource>
+                                    </Picker>
+                                </HorizontalStackLayout>
+
+                                <!-- Remove Button -->
+                                <Button Text="Remove" 
+                                        FontSize="12" 
+                                        HeightRequest="32"
+                                        BackgroundColor="DarkRed"
+                                        TextColor="White"
+                                        HorizontalOptions="End"
+                                        Margin="0,5,0,0"
+                                        Clicked="OnRemoveClicked" 
+                                        CommandParameter="{Binding .}" />
+                            </VerticalStackLayout>
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="BookShelf.Views.BookDetailsPage"
+             Title="Book Details">
+
+    <ScrollView Padding="20">
+        <VerticalStackLayout Spacing="15" HorizontalOptions="Center">
+
+            <Image x:Name="CoverImage" 
+                   WidthRequest="180" 
+                   HeightRequest="260" 
+                   Aspect="AspectFit" />
+
+            <Label x:Name="TitleLabel" 
+                   FontSize="22" 
+                   FontAttributes="Bold" 
+                   HorizontalTextAlignment="Center" />
+
+            <Label x:Name="AuthorLabel" 
+                   FontSize="16" 
+                   TextColor="DimGray" 
+                   HorizontalTextAlignment="Center" />
+
+            <Label x:Name="YearLabel" 
+                   FontSize="14" 
+                   TextColor="Gray" 
+                   HorizontalTextAlignment="Center" />
+
+            <Button Text="Save to My Books" 
+                    Clicked="OnSaveButtonClicked" 
+                    Margin="0,20,0,0" 
+                    BackgroundColor="DarkSlateBlue" 
+                    TextColor="White" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
